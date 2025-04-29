@@ -1,17 +1,6 @@
 <?php
 // Database connection settings
-$servername = "localhost:3307"; // Change if necessary
-$username = "root"; // Change to your database username
-$password = ""; // Change to your database password
-$database = "stayease"; // Change to your database name
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
