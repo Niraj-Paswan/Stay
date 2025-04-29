@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .btn {
+    @apply relative w-full bg-black text-white font-medium py-3 px-4 rounded-lg text-sm overflow-hidden transition-all duration-200 transform font-Nrj-fonts;
+  }
+
+  .btn span {
+    @apply relative z-10;
+  }
+}
+
+/* Pseudo-element styles */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
+/*<!-- Signup Button -->
+          <div class="mt-4">
+            <a href="signup.php"
+              class="group w-full flex items-center justify-center gap-2 text-center bg-white font-medium py-3 px-4 rounded-lg text-sm border border-gray-300 text-gray-600 transition-all duration-200 hover:border-gray-800 hover:text-gray-900 font-Nrj-fonts hover:bg-gradient-to-t from-white/40 to-transparent">
+              <i data-lucide="user-plus" class="w-4 h-4 text-gray-600"></i>
+              Create an Account
+            </a>
+          </div>*/
+
+/*<!-- Login Button -->
+          <button id="submit-button" type="submit"
+            class="relative w-full bg-black text-white font-medium py-3 px-4 rounded-lg text-sm overflow-hidden transition-all duration-200 transform font-Nrj-fonts group">
+            <span class="relative z-10">Login</span>
+            <span
+              class="absolute inset-0 bg-gradient-to-b from-white/30 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
+          </button>*/
