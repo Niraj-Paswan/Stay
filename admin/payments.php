@@ -1,6 +1,7 @@
 <?php
 // Database connection
 include '../Database/dbconfig.php';
+
 // Fetch payment records
 $sql = "SELECT payment_id, userID, transaction_id, original_rent, payment_amount, payment_method, payment_status FROM payments";
 $result = $conn->query($sql);
@@ -10,7 +11,7 @@ $result = $conn->query($sql);
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Records - Admin</title>
   <link href="../assets/css/styles.css" rel="stylesheet">
@@ -51,9 +52,21 @@ $result = $conn->query($sql);
               echo "<td class='py-4 px-6 text-sm font-semibold text-gray-800'>₹" . number_format($row['payment_amount'], 2) . "</td>";
               echo "<td class='py-4 px-6 text-sm text-gray-800'>{$row['payment_method']}</td>";
 
-              // Change text color based on payment status
-              $statusClass = ($row['payment_status'] == 'successful') ? 'text-green-600' : 'text-red-600';
-              echo "<td class='py-4 px-6 text-sm font-semibold $statusClass'>{$row['payment_status']}</td>";
+              // Styled badge for status
+              $status = strtolower($row['payment_status']);
+              if ($status === 'successful') {
+                $badgeClass = "bg-green-100 text-green-800 ";
+              } elseif ($status === 'cancelled') {
+                $badgeClass = "bg-red-100 text-red-800";
+              } else {
+                $badgeClass = "bg-red-100 text-red-700";
+              }
+
+              echo "<td class='py-4 px-6   text-gray-800'>
+                      <span class='px-2.5 py-0.5 rounded-full text-xs font-semibold inline-flex items-center $badgeClass'>
+                        {$row['payment_status']}
+                      </span>
+                    </td>";
 
               echo "</tr>";
             }
@@ -70,5 +83,5 @@ $result = $conn->query($sql);
 </html>
 
 <?php
-$conn->close(); // Close database connection
+$conn->close();
 ?>

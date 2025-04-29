@@ -1,14 +1,6 @@
 <?php
 // Database connection
-$host = "localhost:3307";
-$username = "root";
-$password = "";
-$database = "stayease";
-
-$conn = new mysqli($host, $username, $password, $database);
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Get filter values if set
 $filter_type = isset($_GET['type']) ? $_GET['type'] : '';
@@ -151,7 +143,7 @@ $conn->close();
 </head>
 
 <body class="min-h-screen font-Nrj-fonts">
-  <div class="max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="max-w-12xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
     <!-- Header Section -->
     <div class="mb-8">
       <h1 class="text-2xl font-semibold text-gray-900">Property Listings</h1>

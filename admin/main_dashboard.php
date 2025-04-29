@@ -1,16 +1,5 @@
 <?php
-
-$servername = "localhost:3307";
-$username = "root";
-$password = "";
-$database = "stayease";
-
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Fetch Total Listings (Assuming you have a `listings` table)
 $totalListings = $conn->query("SELECT COUNT(*) AS total FROM properties")->fetch_assoc()['total'];
@@ -85,28 +74,77 @@ $conn->close();
   <div class="container mx-auto">
     <!-- Top Stats -->
     <div class="flex flex-row gap-6 mb-6">
-      <div
-        class=" w-full bg-white p-6 rounded-md shadow-sm flex flex-col justify-between border-[1.5px] border-gray-300">
-        <h3 class="text-gray-600"><i class="fa-regular fa-house text-for mr-2"></i>Total Listings</h3>
-        <p class="text-3xl font-bold text-gray-900"><?php echo $totalListings; ?></p>
-      </div>
-      <div
-        class=" w-full bg-white p-6 rounded-md shadow-sm flex flex-col justify-between border-[1.5px] border-gray-300">
-        <h3 class="text-gray-600"><i class="fa-regular fa-user text-for mr-2"></i>Total Users</h3>
-        <p class="text-3xl font-bold text-gray-900"><?php echo $totalUsers; ?></p>
-      </div>
-      <div
-        class="w-full bg-white p-6 rounded-md shadow-sm flex flex-col justify-between border-[1.5px] border-gray-300">
-        <h3 class="text-gray-600"><i class="fa-light fa-file-invoice-dollar text-for mr-2"></i>Total Bookings</h3>
-        <p class="text-3xl font-bold text-gray-900"><?php echo $totalBookings; ?></p>
-      </div>
-      <div
-        class=" w-full bg-white p-6 rounded-md shadow-sm flex flex-col justify-between border-[1.5px] border-gray-300">
-        <h3 class="text-gray-600"><i class="fa-regular fa-chart-line-up text-for mr-2"></i>Revenue</h3>
-        <p class="text-3xl font-bold text-green-600">₹<?php echo number_format($revenue, 2); ?></p>
 
+      <!-- Total Listings -->
+      <div class="w-full bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm text-gray-600">Total Listings</h3>
+            <p class="text-2xl font-bold text-gray-900 mt-1"><?php echo $totalListings; ?></p>
+          </div>
+          <div class="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center">
+            <i class="far fa-house text-blue-600 text-lg"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm flex items-center">
+          <span class="text-green-600 font-semibold">+12%</span>
+          <span class="ml-1 text-gray-500">from last month</span>
+        </div>
       </div>
+
+      <!-- Active Bookings -->
+      <div class="w-full bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm text-gray-600">Total Bookings</h3>
+            <p class="text-2xl font-bold text-gray-900 mt-1"><?php echo $totalBookings; ?></p>
+          </div>
+          <div class="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center">
+            <i class="far fa-signal-bars-good text-green-600 text-lg"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm flex items-center">
+          <span class="text-green-600 font-semibold">+8%</span>
+          <span class="ml-1 text-gray-500">from last week</span>
+        </div>
+      </div>
+
+      <!-- Total Users -->
+      <div class="w-full bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm text-gray-600">Total Users</h3>
+            <p class="text-2xl font-bold text-gray-900 mt-1"><?php echo $totalUsers; ?></p>
+          </div>
+          <div class="bg-violet-100 rounded-full w-12 h-12 flex items-center justify-center">
+            <i class="far fa-user text-violet-600 text-lg"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm flex items-center">
+          <span class="text-green-600 font-semibold">+5%</span>
+          <span class="ml-1 text-gray-500">this month</span>
+        </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="w-full bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm text-gray-600">Total Revenue</h3>
+            <p class="text-2xl font-semibold text-gray-900 mt-1">₹<?php echo number_format($revenue, 2); ?></p>
+          </div>
+          <div class="bg-yellow-100 rounded-full w-12 h-12 flex items-center justify-center">
+            <i class="far fa-indian-rupee-sign text-amber-600 text-lg"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm flex items-center">
+          <span class="text-green-600 font-semibold">+15%</span>
+          <span class="ml-1 text-gray-500">growth this quarter</span>
+        </div>
+      </div>
+
     </div>
+
 
     <!-- Users Information -->
     <div class="bg-white p-6 rounded-md shadow-md border-[1.5px] border-gray-300 mb-6">
@@ -157,10 +195,22 @@ $conn->close();
               <td class="py-3 px-4"><?php echo $payment['transaction_id']; ?></td>
               <td class="py-3 px-4">₹<?php echo number_format($payment['payment_amount'], 2); ?></td>
               <td class="py-3 px-4"><?php echo date("d M Y", strtotime($payment['payment_date'])); ?></td>
-              <td
-                class="py-3 px-4 font-semibold <?php echo ($payment['payment_status'] == 'successful') ? 'text-green-600' : 'text-yellow-600'; ?>">
-                <?php echo $payment['payment_status']; ?>
+              <td class="py-3 px-4">
+                <?php
+                $status = $payment['payment_status'];
+                if ($status == 'successful') {
+                  $classes = "text-xs px-2 py-1 rounded-full font-semibold bg-green-100 text-green-800";
+                } elseif ($status == 'cancelled') {
+                  $classes = "text-xs px-2 py-1 rounded-full font-semibold bg-red-100 text-red-800 ";
+                } else {
+                  $classes = "text-xs px-2 py-1 rounded-full font-semibold bg-red-100 text-red-800";
+                }
+                ?>
+                <span class="<?php echo $classes; ?>">
+                  <?php echo htmlspecialchars($status); ?>
+                </span>
               </td>
+
             </tr>
           <?php } ?>
         </tbody>

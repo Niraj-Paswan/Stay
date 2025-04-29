@@ -1,16 +1,6 @@
 <?php
 // Database connection
-$servername = "localhost:3307";
-$username = "root"; // Change if needed
-$password = ""; // Change if needed
-$database = "stayease";
-
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Fetch all users from signup table and check booking status from payments
 $sql = "SELECT 
@@ -18,7 +8,7 @@ $sql = "SELECT
             s.email, 
             COALESCE(MAX(p.payment_status), 'Not Booked') AS booking_status
         FROM signup s
-        LEFT JOIN payments p ON s.userID = p.userID AND p.payment_status = 'successful'
+        LEFT JOIN payments p ON s.userID = p.userID
         GROUP BY s.userID, s.email";
 
 $result = $conn->query($sql);
@@ -53,7 +43,7 @@ $result = $conn->query($sql);
             <th class="py-3 px-6 text-left text-sm font-bold uppercase">User ID</th>
             <th class="py-3 px-6 text-left text-sm font-bold uppercase">Email</th>
             <th class="py-3 px-6 text-left text-sm font-bold uppercase">Account Status</th>
-            <th class="py-3 px-6 text-left text-sm font-bold uppercase">Bookings</th>
+            <th class="py-3 px-6 text-left text-sm font-bold uppercase">Booking Status</th>
           </tr>
         </thead>
 
@@ -66,14 +56,23 @@ $result = $conn->query($sql);
               echo "<td class='py-4 px-6 text-sm text-gray-800'>{$row['userID']}</td>";
               echo "<td class='py-4 px-6 text-sm text-gray-800'>{$row['email']}</td>";
               echo "<td class='py-4 px-6 text-sm text-gray-800 font-medium'>
-        Verified <i class='fa-solid fa-badge-check text-blue-600 ml-2'></i>
-      </td>";
+                      Verified <i class='fa-solid fa-badge-check text-blue-600 ml-2'></i>
+                    </td>";
 
-              if ($row['booking_status'] == 'successful') {
-                echo "<td class='py-4 px-6 text-sm text-green-600 font-semibold'>Booked</td>";
+              $bookingStatus = strtolower($row['booking_status']);
+
+              if ($bookingStatus === 'successful') {
+                $bookingClass = "bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full";
+                $bookingText = "Booked";
+              } elseif ($bookingStatus === 'cancelled') {
+                $bookingClass = "bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded-full";
+                $bookingText = "Cancelled";
               } else {
-                echo "<td class='py-4 px-6 text-sm text-red-600 font-semibold'>Not Booked</td>";
+                $bookingClass = "bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full";
+                $bookingText = "Not Booked";
               }
+
+              echo "<td class='py-4 px-6'><span class='$bookingClass'>$bookingText</span></td>";
               echo "</tr>";
             }
           } else {

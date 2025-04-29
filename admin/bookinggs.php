@@ -1,17 +1,5 @@
 <?php
-// Database connection
-$servername = "localhost:3307"; // Database host
-$username = "root";             // Database username
-$password = "";                 // Database password
-$dbname = "stayease";           // Database name
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 // SQL query to fetch booking details
 $sql = "SELECT 
             p.userID, 
@@ -83,10 +71,10 @@ $result = $conn->query($sql);
             <th class="py-3 px-6 text-left text-sm font-semibold text-white">
               Booking Status
             </th>
-            <th class="py-3 px-6 text-left text-sm font-semibold text-white rounded-tr-md">
+            <th class="py-3 px-6 text-left text-sm font-semibold text-white ">
               Payment Method
             </th>
-            <th class="py-3 px-6 text-left text-sm font-semibold text-white">
+            <th class="py-3 px-6 text-left text-sm font-semibold text-white rounded-tr-md">
               Booking Type
             </th>
 
@@ -105,10 +93,19 @@ $result = $conn->query($sql);
               echo "<td class='py-4 px-6 text-sm text-gray-800'>" . $row["property_name"] . "</td>";
               echo "<td class='py-4 px-6 text-sm text-gray-800'>" . $row["rent_start_date"] . "</td>";
               echo "<td class='py-4 px-6 text-sm text-gray-800'>" . $row["next_due_date"] . "</td>";
-              echo "<td class='py-4 px-6 text-sm text-gray-800'>" . $row["payment_status"] . "</td>";
+
+              $status = $row["payment_status"];
+              if ($status == "successful") {
+                $classes = "bg-green-100 text-green-800 rounded-full px-2.5 py-0.5 inline-flex items-center text-xs font-semibold";
+              } elseif ($status == "cancelled") {
+                $classes = "bg-red-100 text-red-800 rounded-full px-2.5 py-0.5 inline-flex items-center text-xs font-semibold";
+              } else {
+                $classes = "bg-gray-100 text-gray-800 rounded-full px-2.5 py-0.5 inline-flex items-center text-xs font-semibold";
+              }
+              echo "<td class='py-4 px-6 text-sm text-gray-800'><span class='$classes'>" . htmlspecialchars($status) . "</span></td>";
+
               echo "<td class='py-4 px-6 text-sm text-gray-800'>" . $row["payment_method"] . "</td>";
               echo "<td class='py-4 px-6 text-sm text-gray-800'>" . $row["booking_type"] . "</td>";
-
               echo "</tr>";
             }
           } else {
@@ -116,6 +113,7 @@ $result = $conn->query($sql);
           }
           ?>
         </tbody>
+
       </table>
     </div>
   </div>

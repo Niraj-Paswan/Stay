@@ -7,7 +7,10 @@
   <title>StayEase | Admin Dashboard</title>
   <link rel="stylesheet" href="../assets/css/styles.css" />
   <link rel="shortcut icon" href="../assets/img/stayease logo.svg" type="image/x-icon" />
-  <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     html,
@@ -158,7 +161,7 @@
 
     .main-content {
       margin-left: 270px;
-      padding: 80px 20px 20px;
+      padding: 90px 0px 0px;
       width: calc(100% - 270px);
     }
   </style>
@@ -216,23 +219,23 @@
 
   <div class="sidebar">
     <nav>
-      <a class="mt-2" href="#" class="active" onclick="showContent('main_dashboard', this)">
-        <i class="fa-solid fa-chart-line"></i> Dashboard
+      <a href="#" class="active mt-4 " onclick="showContent('main_dashboard', this)">
+        <i data-lucide="chart-column" class="sidebar-icon mr-2 w-5 h-5"></i> Dashboard
       </a>
       <a href="#" onclick="showContent('dashboard', this)">
-        <i class="fas fa-home"></i> Listings
+        <i data-lucide="home" class="sidebar-icon  mr-2 w-5 h-5"></i> Listings
       </a>
       <a href="#" onclick="showContent('bookinggs', this)">
-        <i class="fas fa-calendar-check"></i> Bookings
+        <i data-lucide="calendar-check " class="sidebar-icon  mr-2 w-5 h-5"></i> Bookings
       </a>
       <a href="#" onclick="showContent('user', this)">
-        <i class="fas fa-users"></i> Users
+        <i data-lucide="users" class="sidebar-icon  mr-2 w-5 h-5"></i> Users
       </a>
       <a href="#" onclick="showContent('payments', this)">
-        <i class="fas fa-credit-card"></i> Payments
+        <i data-lucide="credit-card" class="sidebar-icon  mr-2 w-5 h-5"></i> Payments
       </a>
       <a href="#" onclick="showContent('query_info', this)">
-        <i class="fa-solid fa-headset"></i> Queries
+        <i data-lucide="headphones" class="sidebar-icon  mr-2 w-5 h-5"></i> Queries
       </a>
     </nav>
   </div>
@@ -270,6 +273,11 @@
       }
     });
   </script>
+  <script>
+    // Initialize Lucide icons after the page has loaded
+    lucide.createIcons();
+  </script>
+
 </body>
 
 </html>
