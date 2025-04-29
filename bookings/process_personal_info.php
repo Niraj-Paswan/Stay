@@ -7,10 +7,7 @@ if (!isset($_SESSION['userID']) || !isset($_SESSION['user_email'])) {
 }
 
 // Database connection
-$conn = new mysqli("localhost:3307", "root", "", "stayease");
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Fetch session data
 $userID = $_SESSION['userID'];

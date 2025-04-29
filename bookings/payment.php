@@ -159,7 +159,7 @@ error_log("Final Security Deposit: " . $_SESSION['security_deposit']);
                     </div>
 
                     <div class="mb-8">
-                        <h3 class="text-sm font-medium text-gray-700 mb-3">Accepted Payment Methods</h3>
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Accepted Payment Cards</h3>
                         <div class="flex space-x-4">
                             <div class="p-2 bg-gray-50 rounded-md border border-gray-300 merchant-logo">
                                 <img src="../assets/img/visa-logo.svg" class="w-12 h-8" alt="Visa Logo" />

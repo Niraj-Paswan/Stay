@@ -1,4 +1,5 @@
 <?php
+include '../Database/dbconfig.php';
 session_start();
 
 // Ensure the user is logged in

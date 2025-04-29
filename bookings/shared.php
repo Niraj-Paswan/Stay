@@ -1,15 +1,7 @@
 <?php
 session_start();
 // Database connection
-$host = "localhost:3307";
-$username = "root";
-$password = "";
-$database = "stayease";
-
-$conn = new mysqli($host, $username, $password, $database);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Check if the property ID is passed
 if (isset($_GET['id'])) {
@@ -24,12 +16,12 @@ if (isset($_GET['id'])) {
     $stmt->fetch();
     $stmt->close();
 
-
     // Ensure price is a valid number (since it's stored as varchar)
     $property_price = is_numeric($property_price) ? floatval($property_price) : 5000;
 } else {
     // Default value if no ID is provided
     $property_price = 15000;
+    $is_sharable = true;
 }
 
 // On click of Confirm Booking button
@@ -66,26 +58,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StayEase | Room Sharing</title>
+    <title>StayEase | Room Booking Options</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap"
         rel="stylesheet" />
     <link rel="shortcut icon" href="../assets/img/stayease logo.svg" type="image/x-icon" />
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.2/css/all.css" />
     <link rel="stylesheet" href="../assets/css/styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        .active-option {
-            border: 1px solid #2563eb;
-            /* Blue Border for Selected Option */
-            background-color: #e0f2fe;
-            /* Light Blue */
-        }
-
         body {
+            font-family: 'Poppins', sans-serif;
             background-image: url("../assets/img/beams-home@95.jpg");
             background-size: cover;
             background-position: center;
+        }
+
+        .option-card {
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .option-card:hover:not(.disabled) {
+            background-color: #f1f5f9;
+        }
+
+        .option-card.selected {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .option-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .animate-fade-in {
@@ -103,106 +109,134 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
                 transform: translateY(0);
             }
         }
+
+        .check-circle {
+            display: none;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 9999px;
+            width: 20px;
+            height: 20px;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+        }
+
+        .option-card.selected .check-circle {
+            display: flex;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 flex justify-center items-center min-h-screen p-6 font-Nrj-fonts">
-    <div class="p-4 absolute left-2 top-2">
+<body class="min-h-screen flex justify-center items-center p-6">
+    <div class="absolute left-6 top-6">
         <button onclick="history.back()" class="flex items-center text-blue-600 font-medium hover:underline">
             <i class="fa-solid fa-arrow-left mr-2"></i> Back
         </button>
     </div>
-    <div class="bg-white p-8 rounded-xl shadow-lg max-w-xl w-full border-[1.5px] border-gray-300 animate-fade-in">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4 text-center">
-            Choose Your Room Booking Option
-        </h2>
+
+    <div class="bg-white rounded-xl shadow-lg max-w-xl w-full border-[1.5px] border-gray-300 animate-fade-in">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 text-center">
+                Choose Your Room Booking Option
+            </h2>
+        </div>
 
         <!-- Booking Options -->
-        <form method="POST">
-            <input type="hidden" name="property_id" value="<?= $property_id; ?>">
+        <form method="POST" class="p-6">
+            <input type="hidden" name="property_id" value="<?= $property_id ?? 1; ?>">
             <input type="hidden" name="total_amount" id="total_amount">
             <input type="hidden" name="discount_amount" id="discount_amount">
             <input type="hidden" name="security_deposit" id="security_deposit">
             <input type="hidden" name="actual_rent" id="actual_rent">
+            <input type="hidden" name="booking_option" id="booking_option" value="solely">
 
             <!-- Sole Booking -->
-            <label id="sole-option"
-                class="flex bg-gray-100 p-4 rounded-md mb-4 cursor-pointer hover:bg-gray-200 transition relative">
-                <input type="radio" name="booking_option" value="solely" class="hidden" />
-                <p
-                    class="bg-yellow-100 rounded-md border-[1px] border-gray-300 absolute top-2 right-2 text-sm p-1 text-amber-900">
+            <div id="sole-option" class="option-card relative bg-gray-50 p-4 rounded-md mb-4 cursor-pointer selected">
+                <span
+                    class="absolute top-0 right-0 bg-amber-100 text-amber-900 text-xs px-2 py-1 rounded-md border border-amber-200">
                     recommended
-                </p>
+                </span>
 
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-user-lock text-xl text-blue-700"></i>
+                    <div class="bg-blue-100 px-4 py-2.5 rounded-full">
+                        <i class="fa-regular fa-user text-blue-700"></i>
+                    </div>
                     <div>
                         <span class="block text-lg font-medium text-gray-900">Book Solely</span>
                         <p class="text-gray-700 text-sm mt-1">
                             Pay full rent & full security deposit.
                         </p>
                     </div>
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check text-xs"></i>
+                    </div>
                 </div>
-            </label>
+            </div>
 
             <!-- Shared Booking -->
-            <label id="share-option" class="block bg-gray-100 p-4 rounded-md mb-4 transition relative 
-              <?php echo $is_sharable ? 'cursor-pointer hover:bg-gray-200' : 'opacity-50 cursor-not-allowed'; ?>">
-                <input type="radio" name="booking_option" value="Shared" class="hidden" <?php echo !$is_sharable ? 'disabled' : ''; ?> />
+            <div id="share-option"
+                class="option-card relative bg-gray-50 p-4 rounded-md mb-4 cursor-pointer <?= $is_sharable ? '' : 'disabled' ?>">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-user-group text-xl text-blue-700"></i>
+                    <div class="bg-blue-100 px-3 py-2.5 rounded-full">
+                        <i class="fa-regular fa-user-group text-blue-700"></i>
+                    </div>
                     <div>
                         <span class="block text-lg font-medium text-gray-900">Share Room</span>
                         <p class="text-gray-700 text-sm mt-1">
                             Split rent & security deposit 50-50.
                         </p>
                     </div>
+                    <div class="check-circle">
+                        <i class="fa-solid fa-check text-xs"></i>
+                    </div>
                 </div>
-            </label>
+            </div>
 
             <!-- Promo Code Section -->
-            <div class="mt-4">
-                <label class="block text-gray-700 font-medium mb-1">Apply Promo Code:</label>
+            <div class="mt-6">
+                <label class="block text-gray-700 font-medium mb-2">Apply Promo Code:</label>
                 <div class="flex">
                     <input type="text" id="promo-code"
-                        class="w-full p-2 border border-gray-300 rounded-l-md shadow-sm focus:ring-blue-500 focus:outline-none focus:border-gray-500"
+                        class="w-full p-2 px-4 border border-gray-300 rounded-l-md shadow-sm focus:ring-blue-500 focus:outline-none focus:border-gray-500"
                         placeholder="Enter promo code" />
                     <button type="button" id="apply-code"
-                        class="bg-blue-600 text-white px-4 rounded-r-md hover:bg-blue-700">
+                        class="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 transition">
                         Apply
                     </button>
                 </div>
-                <p id="promo-message" class="text-green-600 text-sm mt-1 hidden"></p>
+                <div id="promo-message" class="hidden flex items-center gap-1 mt-2 text-sm"></div>
             </div>
 
             <!-- Rent Summary -->
-            <div class="bg-blue-50 border-[1.5px] border-gray-300 text-black p-4 rounded-md mb-4 text-sm mt-5">
-                <div class="flex justify-between items-center mb-1">
+            <div class="bg-blue-50 border-[1.5px] border-gray-300 p-5 rounded-lg mt-6 text-sm">
+                <div class="flex justify-between items-center mb-2">
                     <p class="font-medium">Room Rent:</p>
-                    <p class="font-semibold">₹<span id="rent">5000</span></p>
+                    <p class="font-semibold">₹<span id="rent"><?= $property_price ?></span></p>
                 </div>
 
-                <div class="flex justify-between items-center mb-1">
+                <div class="flex justify-between items-center mb-2">
                     <p class="font-medium">Security Deposit (25% of Rent):</p>
-                    <p class="font-semibold">₹<span id="deposit">1250</span></p>
+                    <p class="font-semibold">₹<span id="deposit"><?= round($property_price * 0.25) ?></span></p>
                 </div>
 
-                <div class="flex justify-between items-center mb-1">
+                <div class="flex justify-between items-center mb-2">
                     <p class="font-medium">Discount:</p>
                     <p class="font-semibold text-green-600">
                         -₹<span id="discount">0</span>
                     </p>
                 </div>
 
-                <div
-                    class="border-t-2 border-gray-300 mt-2 pt-2 flex justify-between items-center text-lg font-semibold">
-                    <p class="text-gray-800">Total Payable:</p>
-                    <p class="text-blue-700">₹<span id="total">6250</span></p>
+                <div class="border-t-2 border-gray-300 mt-3 pt-3 flex justify-between items-center">
+                    <p class="text-gray-800 font-semibold text-lg">Total Payable:</p>
+                    <p class="text-blue-700 font-semibold text-xl">₹<span
+                            id="total"><?= $property_price + round($property_price * 0.25) ?></span></p>
                 </div>
             </div>
+
             <!-- Submit Button -->
             <button type="submit" name="confirm_booking"
-                class="w-full mt-4 bg-blue-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition">
+                class="w-full mt-6 bg-blue-600 text-white py-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition">
                 Confirm Booking
             </button>
         </form>
@@ -213,13 +247,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         // Base Rent and Security Deposit Percentage
         const fullRent = <?php echo $property_price; ?>;
         const securityPercentage = 0.25;
-
-        // Disable the shared option if not sharable
         const isSharable = <?php echo $is_sharable ? 'true' : 'false'; ?>;
-        if (!isSharable) {
-            document.getElementById("share-option").style.pointerEvents = "none";
-        }
-
 
         // Elements
         const rentEl = document.getElementById("rent");
@@ -230,43 +258,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
         const discountAmountInput = document.getElementById("discount_amount");
         const securityDepositInput = document.getElementById("security_deposit");
         const actualRentInput = document.getElementById("actual_rent");
+        const bookingOptionInput = document.getElementById("booking_option");
+        const soleOption = document.getElementById("sole-option");
+        const shareOption = document.getElementById("share-option");
+        const promoMessage = document.getElementById("promo-message");
 
         let discountAmount = 0;
+        let currentOption = "solely";
 
         // Set initial values
         function calculateInitialValues() {
-            rentEl.textContent = fullRent;
-            depositEl.textContent = Math.round(fullRent * securityPercentage);
-            totalEl.textContent = Math.round(fullRent + fullRent * securityPercentage);
-            totalAmountInput.value = totalEl.textContent;
-            securityDepositInput.value = depositEl.textContent;
+            rentEl.textContent = fullRent.toLocaleString();
+            depositEl.textContent = Math.round(fullRent * securityPercentage).toLocaleString();
+            totalEl.textContent = Math.round(fullRent + fullRent * securityPercentage).toLocaleString();
+            totalAmountInput.value = Math.round(fullRent + fullRent * securityPercentage);
+            securityDepositInput.value = Math.round(fullRent * securityPercentage);
             discountAmountInput.value = 0;
             actualRentInput.value = fullRent;
         }
         calculateInitialValues();
 
         // Function to update amounts dynamically
-        function updateAmount(event, rent, deposit) {
-            rentEl.textContent = rent;
-            depositEl.textContent = deposit;
-            totalEl.textContent = Math.max(0, rent + deposit - discountAmount);
-            totalAmountInput.value = totalEl.textContent;
-            securityDepositInput.value = depositEl.textContent;
+        function updateAmount(option) {
+            if (option === "shared" && !isSharable) return;
+
+            currentOption = option;
+            bookingOptionInput.value = option;
+
+            const rent = option === "solely" ? fullRent : Math.round(fullRent / 2);
+            const deposit = Math.round(rent * securityPercentage);
+
+            rentEl.textContent = rent.toLocaleString();
+            depositEl.textContent = deposit.toLocaleString();
+            totalEl.textContent = Math.max(0, rent + deposit - discountAmount).toLocaleString();
+
+            totalAmountInput.value = Math.max(0, rent + deposit - discountAmount);
+            securityDepositInput.value = deposit;
             actualRentInput.value = rent;
 
-            // Remove highlight from all and add to selected
-            document.querySelectorAll("label").forEach(label => label.classList.remove("active-option"));
-            event.currentTarget.classList.add("active-option");
+            // Update UI
+            soleOption.classList.toggle("selected", option === "solely");
+            shareOption.classList.toggle("selected", option === "shared");
         }
 
         // Booking Selection
-        document.getElementById("sole-option").addEventListener("click", (event) =>
-            updateAmount(event, fullRent, Math.round(fullRent * securityPercentage))
-        );
+        soleOption.addEventListener("click", () => updateAmount("solely"));
 
-        document.getElementById("share-option").addEventListener("click", (event) =>
-            updateAmount(event, Math.round(fullRent / 2), Math.round((fullRent / 2) * securityPercentage))
-        );
+        if (isSharable) {
+            shareOption.addEventListener("click", () => updateAmount("shared"));
+        }
 
         // Promo Code Logic
         const promoCodes = {
@@ -276,36 +316,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['confirm_booking'])) {
 
         document.getElementById("apply-code").addEventListener("click", () => {
             const promoInput = document.getElementById("promo-code").value.trim().toUpperCase();
-            const promoMessage = document.getElementById("promo-message");
 
             if (promoCodes[promoInput]) {
-                let currentTotal = parseInt(rentEl.textContent) + parseInt(depositEl.textContent);
+                let currentTotal = parseInt(rentEl.textContent.replace(/,/g, '')) + parseInt(depositEl.textContent.replace(/,/g, ''));
 
                 if (promoInput.startsWith("SAVE")) {
-                    discountAmount = (parseInt(promoCodes[promoInput]) / 100) * currentTotal;
+                    discountAmount = Math.round((parseInt(promoCodes[promoInput]) / 100) * currentTotal);
                 } else {
                     discountAmount = promoCodes[promoInput];
                 }
 
-                discountEl.textContent = Math.round(discountAmount);
-                promoMessage.textContent = `✅ Promo code applied! You saved ₹${Math.round(discountAmount)}.`;
+                discountEl.textContent = discountAmount.toLocaleString();
+                promoMessage.innerHTML = `<i class="fa-solid fa-badge-check text-green-600 mr-1"></i> Promo code applied! You saved ₹${discountAmount.toLocaleString()}.`;
                 promoMessage.classList.remove("hidden", "text-red-600");
                 promoMessage.classList.add("text-green-600");
+
+                discountAmountInput.value = discountAmount;
             } else {
                 discountAmount = 0;
                 discountEl.textContent = "0";
-                promoMessage.textContent = "❌ Invalid promo code.";
+                promoMessage.innerHTML = `<i class="fa-solid fa-xmark text-red-600 mr-1"></i> Invalid promo code.`;
                 promoMessage.classList.remove("hidden", "text-green-600");
                 promoMessage.classList.add("text-red-600");
+
+                discountAmountInput.value = 0;
             }
 
-            totalEl.textContent = Math.round(parseInt(rentEl.textContent) + parseInt(depositEl.textContent) - discountAmount);
-            totalAmountInput.value = totalEl.textContent;
-            discountAmountInput.value = discountEl.textContent;
+            const rent = parseInt(rentEl.textContent.replace(/,/g, ''));
+            const deposit = parseInt(depositEl.textContent.replace(/,/g, ''));
+            const total = Math.max(0, rent + deposit - discountAmount);
+
+            totalEl.textContent = total.toLocaleString();
+            totalAmountInput.value = total;
         });
 
-        // Set sole option as default selected
-        document.getElementById("sole-option").click();
+        // Initialize form
+        updateAmount("solely");
     </script>
 </body>
 
