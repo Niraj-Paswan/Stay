@@ -463,27 +463,42 @@ $conn->close();
 
     // Add the markers to the map with hover cards
     markers.forEach((marker) => {
+      const popupContent = `
+    <div class="hover-card">
+      <img src="${marker.image}" alt="Property" />
+      <i class="fa-regular fa-xmark close-popup" style="cursor:pointer;"></i>
+      <div class="content font-Nrj-fonts">
+        <h3 class="font-bold text-lg">${marker.property_name}</h3> 
+        <h1 class="font-normal text-sm">${marker.location}</h1> 
+        <h2>From <span>₹${marker.price}</span> /Month</h2>
+        <p>Distance: ${getDistance(15.5916, 73.8245, marker.coordinates[1], marker.coordinates[0]).toFixed(2)} km</p>
+      </div>
+    </div>
+  `;
+
       const popup = new mapboxgl.Popup({
         offset: 25,
         closeButton: false,
-      }).setHTML(
-        `<div class="hover-card">
-          <img src="${marker.image}" alt="Property" />
-          <i class="fa-regular fa-xmark"></i>
-          <div class="content font-Nrj-fonts">
-            <h3 class="font-bold text-lg">${marker.property_name}</h3> 
-            <h1 class="font-normal text-sm">${marker.location}</h1> 
-            <h2>From <span>₹${marker.price}</span> /Month</h2>
-            <p>Distance: ${getDistance(15.5916, 73.8245, marker.coordinates[1], marker.coordinates[0]).toFixed(2)} km</p>
-          </div>
-        </div>`
-      );
+      }).setHTML(popupContent);
 
+      // Create marker with popup
       new mapboxgl.Marker({ color: "blue" })
         .setLngLat(marker.coordinates)
-        .setPopup(popup) // Add the popup
+        .setPopup(popup)
         .addTo(map);
+
+      // Attach event listener to the close icon after popup opens
+      popup.on('open', () => {
+        const popupElement = popup.getElement();
+        const closeBtn = popupElement.querySelector('.close-popup');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            popup.remove();
+          });
+        }
+      });
     });
+
 
     // Geolocate event listener
     geolocate.on("geolocate", (event) => {

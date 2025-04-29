@@ -1,17 +1,6 @@
 <?php
 // Database connection settings -- update these with your credentials
-$servername = "localhost:3307"; // Database host
-$username = "root";           // Database username
-$password = "";               // Database password
-$dbname = "stayease";       // Database name
-
-// Create a new MySQLi connection using the correct variable names
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check for connection errors
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 if (isset($_POST["submit"])) {
   // Get form data and escape it to prevent SQL injection

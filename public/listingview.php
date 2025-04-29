@@ -127,6 +127,35 @@ $conn->close();
       transform: rotate(0deg);
     }
 
+    .carousel-container {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .gradient-shadow {
+      position: absolute;
+      top: 0;
+      width: 50px;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .left-shadow {
+      left: 0;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.5), transparent);
+    }
+
+    .right-shadow {
+      right: 0;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0.5), transparent);
+    }
+
     /* Custom Styles for hiding and showing elements */
   </style>
 </head>
@@ -152,29 +181,166 @@ $conn->close();
               </div>
               <!-- Thumbnails -->
               <div class="grid grid-cols-3 gap-4 mt-4" id="thumbnails">
-                <div class="relative w-full h-44 rounded-lg overflow-hidden border-[1.5px] border-gray-300">
+                <?php
+                $images = [
+                  ['src' => $property['kitchen'], 'title' => 'Kitchen'],
+                  ['src' => $property['bedroomimg'], 'title' => 'Bedroom'],
+                  ['src' => $property['washroom'], 'title' => 'Washroom']
+                ];
 
-                  <img src="<?= $property['kitchen'] ?>" alt="Thumbnail" class="w-full h-full object-cover"
-                    name="thumbnail_1" id="thumbnail_1" />
-                  <div class="absolute bottom-0 w-full bg-gray-200 p-2 text-center text-sm font-medium">
-                    Kitchen
+                foreach ($images as $index => $img):
+                  ?>
+                  <div class="relative w-full h-44 rounded-lg overflow-hidden border-[1.5px] border-gray-300 group">
+                    <img src="<?= $img['src'] ?>" alt="Thumbnail" class="w-full h-full object-cover" />
+                    <div class="absolute bottom-0 w-full bg-gray-200 p-2 text-center text-sm font-medium">
+                      <?= $img['title'] ?>
+                    </div>
+                    <button
+                      class="zoom-btn absolute top-2 right-2 bg-white p-3 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center h-10 w-10"
+                      data-index="<?= $index ?>">
+                      <i class="fa-regular fa-search-plus text-gray-700 text-base"></i>
+                    </button>
+
                   </div>
-                </div>
-                <div class="relative w-full h-44 rounded-lg overflow-hidden border-[1.5px] border-gray-300">
-                  <img src="<?= $property['bedroomimg'] ?>" alt="Thumbnail" class="w-full h-full object-cover"
-                    name="thumbnail_2" id="thumbnail_2" />
-                  <div class="absolute bottom-0 w-full bg-gray-200 p-2 text-center text-sm font-medium">
-                    Bedroom
-                  </div>
-                </div>
-                <div class="relative w-full h-44 rounded-lg overflow-hidden border-[1.5px] border-gray-300">
-                  <img src="<?= $property['washroom'] ?>" alt="Thumbnail" class="w-full h-full object-cover"
-                    name="thumbnail_3" id="thumbnail_3" />
-                  <div class="absolute bottom-0 w-full bg-gray-200 p-2 text-center text-sm font-medium">
-                    Washroom
+                <?php endforeach; ?>
+              </div>
+
+              <!-- Modal for zoomed image with carousel -->
+              <div id="imageModal"
+                class="fixed inset-0 bg-black bg-opacity-0 flex items-center justify-center z-50 pointer-events-none opacity-0 transition-all duration-300">
+                <div class="relative max-w-4xl max-h-[90vh] w-full mx-4">
+                  <div class="bg-white rounded-lg shadow-xl overflow-hidden">
+                    <div class="relative">
+                      <!-- Carousel Buttons -->
+                      <button id="prevBtn"
+                        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-lg hidden h-9 w-9 flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-left text-gray-800 text-base leading-none"></i>
+                      </button>
+
+                      <img id="zoomedImage" src="/placeholder.svg" alt="Zoomed image"
+                        class="w-full object-contain max-h-[80vh] transition-opacity duration-300 rounded-lg">
+
+                      <button id="nextBtn"
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white rounded-full shadow-lg hidden h-9 w-9 flex items-center justify-center">
+                        <i class="fa-solid fa-chevron-right text-gray-800 text-base leading-none"></i>
+                      </button>
+
+
+
+                      <!-- Close Button -->
+                      <button id="closeModal" class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="p-4 border-t">
+                      <h3 id="imageTitle" class="text-xl font-semibold text-center"></h3>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                  const modal = document.getElementById('imageModal');
+                  const zoomedImage = document.getElementById('zoomedImage');
+                  const imageTitle = document.getElementById('imageTitle');
+                  const closeModal = document.getElementById('closeModal');
+                  const zoomButtons = document.querySelectorAll('.zoom-btn');
+                  const prevBtn = document.getElementById('prevBtn');
+                  const nextBtn = document.getElementById('nextBtn');
+
+                  let currentIndex = 0;
+                  const images = [
+                    { src: "<?= $property['kitchen'] ?>", title: "Kitchen" },
+                    { src: "<?= $property['bedroomimg'] ?>", title: "Bedroom" },
+                    { src: "<?= $property['washroom'] ?>", title: "Washroom" }
+                  ];
+
+                  function openModal(index) {
+                    currentIndex = index;
+                    updateImage();
+
+                    modal.classList.remove('opacity-0', 'pointer-events-none');
+                    modal.classList.add('opacity-100', 'pointer-events-auto');
+                    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+
+                    // Show/hide navigation buttons
+                    prevBtn.style.display = currentIndex > 0 ? 'block' : 'none';
+                    nextBtn.style.display = currentIndex < images.length - 1 ? 'block' : 'none';
+                  }
+
+                  function updateImage() {
+                    zoomedImage.classList.add('opacity-0');
+                    setTimeout(() => {
+                      zoomedImage.src = images[currentIndex].src;
+                      imageTitle.textContent = images[currentIndex].title;
+                      zoomedImage.classList.remove('opacity-0');
+                    }, 200);
+                  }
+
+                  function closeImageModal() {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    modal.classList.remove('opacity-100', 'pointer-events-auto');
+
+                    setTimeout(() => {
+                      modal.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                    }, 300);
+                  }
+
+                  zoomButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                      openModal(parseInt(this.getAttribute('data-index')));
+                    });
+                  });
+
+                  closeModal.addEventListener('click', closeImageModal);
+
+                  modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                      closeImageModal();
+                    }
+                  });
+
+                  document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && !modal.classList.contains('opacity-0')) {
+                      closeImageModal();
+                    } else if (e.key === 'ArrowRight' && currentIndex < images.length - 1) {
+                      currentIndex++;
+                      updateImage();
+                      prevBtn.style.display = 'block';
+                      nextBtn.style.display = currentIndex === images.length - 1 ? 'none' : 'block';
+                    } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                      currentIndex--;
+                      updateImage();
+                      nextBtn.style.display = 'block';
+                      prevBtn.style.display = currentIndex === 0 ? 'none' : 'block';
+                    }
+                  });
+
+                  prevBtn.addEventListener('click', function () {
+                    if (currentIndex > 0) {
+                      currentIndex--;
+                      updateImage();
+                      nextBtn.style.display = 'block';
+                      prevBtn.style.display = currentIndex === 0 ? 'none' : 'block';
+                    }
+                  });
+
+                  nextBtn.addEventListener('click', function () {
+                    if (currentIndex < images.length - 1) {
+                      currentIndex++;
+                      updateImage();
+                      prevBtn.style.display = 'block';
+                      nextBtn.style.display = currentIndex === images.length - 1 ? 'none' : 'block';
+                    }
+                  });
+                });
+              </script>
+
 
               <!-- Property Title and Location -->
               <h2 class="text-2xl font-semibold text-gray-800 mt-6 flex flex-row justify-between"
@@ -217,20 +383,27 @@ $conn->close();
                 </div>
               </div>
               <!-- Occupants Details Section -->
-              <div class="mt-4 ">
+              <div class="mt-4">
                 <h2 class="text-[16px] font-medium text-black mb-1">Occupants Details</h2>
                 <?php if (!empty($occupants)): ?>
                   <?php foreach ($occupants as $occupant): ?>
+                    <!-- Determine Image Based on Gender -->
+                    <?php
+                    $imageSrc = "../assets/img/Male.png"; // Default to male
+                    if (strtolower($occupant['gender']) === "female") {
+                      $imageSrc = "../assets/img/Female.png";
+                    }
+                    ?>
 
                     <!-- Occupant Card -->
-                    <div class="flex items-center gap-4 p-4 bg-white  rounded-md">
-
-                      <!-- Profile Picture (Icon-based) -->
-                      <img class="h-16 w-16 rounded-full p-0 border border-for" src="../assets\img\staying_user.png" alt="">
+                    <div class="flex items-center gap-4 p-4 bg-white rounded-md">
+                      <!-- Profile Picture -->
+                      <img class="h-16 w-16 rounded-full border border-for " src="<?= $imageSrc ?>" alt="Profile Image">
 
                       <!-- User Info -->
                       <div>
-                        <p class="text-lg font-semibold text-gray-900"><?= htmlspecialchars($occupant['full_name']) ?>
+                        <p class="text-lg font-semibold text-gray-900">
+                          <?= htmlspecialchars($occupant['full_name']) ?>
                           <i class="fa-solid fa-badge-check ml-1 text-for text-sm"></i>
                         </p>
 
@@ -240,10 +413,6 @@ $conn->close();
                             <i class="fa-regular fa-envelope text-for"></i>
                             <?= htmlspecialchars($occupant['email_address']) ?>
                           </p>
-                          <!-- <span class="text-gray-500">|</span>
-                          <p class="text-sm text-gray-600 flex items-center gap-2">
-                            <i class="fa-regular fa-phone text-for"></i> <?= htmlspecialchars($occupant['phone_number']) ?>
-                          </p> -->
 
                           <span class="text-gray-500">|</span>
                           <p class="text-sm text-gray-600 flex items-center gap-2">
@@ -263,6 +432,8 @@ $conn->close();
                   <p class="text-gray-500">No occupants yet.</p>
                 <?php endif; ?>
               </div>
+
+
 
 
             </div>
@@ -547,6 +718,8 @@ $conn->close();
                     <span class="font-medium text-gray-600" data-deposit-amount="25%">25%</span>
                     of the
                     <span class="font-medium text-gray-600">rent amount.</span>
+                    and
+                    <span class="font-medium text-gray-600">One Month Advance rent amount.</span>
                   </p>
                 </div>
               </div>
@@ -638,7 +811,7 @@ $conn->close();
           <!-- Embedded Map (iframe) -->
           <!-- Embedded Map (iframe) -->
           <!-- In your listing view page -->
-          <iframe id="mapFrame" class="w-full h-[450px] border-gray-300 rounded-md p-4" src=""></iframe>
+          <iframe id="mapFrame" class="w-full h-[500px] border-gray-300 rounded-md p-4" src=""></iframe>
 
           <script>
             // Assuming you have the coordinates from PHP (from your $properties array)
@@ -656,6 +829,124 @@ $conn->close();
         </div>
       </div>
     </div>
+
+
+    <?php
+    include '../Database/dbconfig.php';
+
+
+    $sql = "SELECT id, property_name, property_location, property_price, latitude, longitude, main_image, kitchen_img, gallery_img, washroom_img, property_type, bathrooms, bedrooms, area, is_sharable FROM properties";
+    $result = $conn->query($sql);
+
+    $properties = [];
+    if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+        $properties[] = [
+          "pid" => $row["id"],
+          "property_name" => $row["property_name"],
+          "location" => $row["property_location"],
+          "coordinates" => [(float) $row["longitude"], (float) $row["latitude"]],
+          "price" => $row["property_price"],
+          "image" => $row["main_image"],
+          "washroom" => $row["washroom_img"],
+          "gallery" => $row["gallery_img"],
+          "kitchen" => $row["kitchen_img"],
+          "type" => $row["property_type"],
+          "bathrooms" => $row["bathrooms"] ?? "N/A",
+          "bedrooms" => $row["bedrooms"] ?? "N/A",
+          "area" => $row["area"] ?? "N/A",
+          "is_sharable" => isset($row["is_sharable"]) ? $row["is_sharable"] : 0
+        ];
+      }
+    }
+
+    ?>
+    <h1 class="text-center font-Nrj-fonts font-medium text-2xl sm:text-3xl lg:text-4xl mt-12">
+      Spotted for You
+      <span class="font-Nrj-fonts text-for">Perfect Properties</span>
+    </h1>
+
+    <div class="bg-white flex justify-center items-center mt-12 font-Nrj-fonts px-4">
+      <div class="relative w-full max-w-6xl">
+        <!-- Gradient Shadows (optional) -->
+        <div class="gradient-shadow left-shadow"></div>
+        <div class="gradient-shadow right-shadow"></div>
+
+        <div class="carousel-container overflow-x-auto">
+          <div id="carousel" class="carousel-track flex gap-4 transition-transform duration-300 ease-in-out">
+            <?php foreach ($properties as $property): ?>
+              <div class="bg-white rounded-xl shadow-md border border-gray-300 w-64 sm:w-72 h-auto flex-shrink-0">
+                <div class="relative">
+                  <img class="w-full h-40 object-cover rounded-t-xl" src="<?= $property['image'] ?>" alt="Property Image" />
+                </div>
+
+                <div class="p-4">
+                  <h3 class="text-lg font-semibold"><?= $property['property_name'] ?></h3>
+                  <div class="flex items-center text-gray-600 text-sm mt-1 mb-1">
+                    <i class="fa-regular fa-location-dot mr-1"></i>
+                    <?= $property['location'] ?>
+                  </div>
+
+                  <!-- Price & Action Button -->
+                  <form action="listingview.php" method="GET">
+                    <input type="hidden" name="id" value="<?= $property['pid'] ?>">
+                    <input type="hidden" name="property_name" value="<?= $property['property_name'] ?>">
+                    <input type="hidden" name="location" value="<?= $property['location'] ?>">
+                    <input type="hidden" name="price" value="<?= $property['price'] ?>">
+                    <input type="hidden" name="image" value="<?= $property['image'] ?>">
+                    <input type="hidden" name="type" value="<?= $property['type'] ?>">
+                    <input type="hidden" name="bathrooms" value="<?= $property['bathrooms'] ?>">
+                    <input type="hidden" name="bedrooms" value="<?= $property['bedrooms'] ?>">
+                    <input type="hidden" name="area" value="<?= $property['area'] ?>">
+                    <input type="hidden" name="userID" value="<?= $_SESSION['userID'] ?>">
+                    <input type="hidden" name="user_email" value="<?= $_SESSION['user_email'] ?>">
+
+                    <!-- Price -->
+                    <h2 class="text-sm font-normal text-gray-500">
+                      <span class="text-black text-xl font-semibold">
+                        ₹<?= number_format($property['price']) ?>
+                        <span class="text-sm font-normal text-gray-500"> /month</span>
+                      </span>
+                    </h2>
+
+                    <button type="submit"
+                      class="w-full py-2 px-4 mt-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 shadow-sm transition duration-200 ease-in-out">
+                      View Details
+                    </button>
+                  </form>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons (visible on all devices) -->
+        <button onclick="moveSlide(-1)"
+          class="absolute left-2 sm:left-[-2rem] top-1/2 transform -translate-y-1/2 bg-gray-50 hover:bg-gray-100 text-for border border-gray-300 p-2 rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg">
+          <i class="fa-solid fa-chevron-left text-xs sm:text-sm"></i>
+        </button>
+        <button onclick="moveSlide(1)"
+          class="absolute right-2 sm:right-[-2rem] top-1/2 transform -translate-y-1/2 bg-gray-50 hover:bg-gray-100 text-for border border-gray-300 p-2 rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg">
+          <i class="fa-solid fa-chevron-right text-xs sm:text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentIndex = 0;
+      const track = document.getElementById("carousel");
+      const cards = document.querySelectorAll(".carousel-track > div");
+      // Adjust the gap based on Tailwind's gap (using 1rem = 16px here)
+      const gap = 16;
+      const cardWidth = cards[0].offsetWidth + gap;
+
+      function moveSlide(direction) {
+        const maxIndex = cards.length - 1;
+        currentIndex = Math.max(0, Math.min(maxIndex, currentIndex + direction));
+        track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+      }
+    </script>
+
 
     <footer class="bg-black font-Nrj-fonts mt-6">
       <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">

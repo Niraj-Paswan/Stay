@@ -3,10 +3,7 @@ session_start();
 require('../fpdf/fpdf.php'); // Include FPDF library
 
 // Database connection
-$conn = new mysqli("localhost:3307", "root", "", "stayease");
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Fetch user details
 $userID = $_SESSION['userID'] ?? null;

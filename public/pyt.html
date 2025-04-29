@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Gateway</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link
+      rel="shortcut icon"
+      href="../assets/img/stayease logo.svg"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+      .razorpay-container .razorpay-payment-gateway-badge {
+        display: none !important;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .razorpay-container {
+        font-family: "Poppins", sans-serif !important;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex items-center justify-center p-4 font-Nrj-fonts"
+  >
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md overflow-hidden">
+      <!-- Header -->
+      <div class="bg-blue-600 p-6 text-white">
+        <h1 class="text-2xl font-bold">Complete Your Payment</h1>
+        <p class="text-blue-100 mt-1">Fast, secure payment processing</p>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="p-6">
+        <form id="payment-form" class="space-y-4">
+          <!-- Customer Information -->
+          <div>
+            <label
+              for="name"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Full Name</label
+            >
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Email Address</label
+            >
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label
+              for="phone"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Phone Number</label
+            >
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Payment Amount -->
+          <div>
+            <label
+              for="amount"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Amount (₹)</label
+            >
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              min="1"
+              value="100"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <!-- Payment Method Selection -->
+          <div>
+            <p class="block text-sm font-medium text-gray-700 mb-2">
+              Payment Methods
+            </p>
+            <div class="grid grid-cols-3 gap-3">
+              <div
+                class="border border-gray-200 rounded-md p-3 flex flex-col items-center cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors payment-method active"
+                data-method="card"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+                <span class="text-xs mt-1 text-center">Card</span>
+              </div>
+              <div
+                class="border border-gray-200 rounded-md p-3 flex flex-col items-center cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors payment-method"
+                data-method="upi"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                <span class="text-xs mt-1 text-center">UPI</span>
+              </div>
+              <div
+                class="border border-gray-200 rounded-md p-3 flex flex-col items-center cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors payment-method"
+                data-method="netbanking"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-gray-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+                <span class="text-xs mt-1 text-center">Net Banking</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            id="pay-button"
+            class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          >
+            Pay Now
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="flex items-center justify-center space-x-4">
+          <span class="text-xs text-gray-500">Secured by</span>
+          <img
+            src="https://razorpay.com/assets/razorpay-logo.svg"
+            alt="Razorpay"
+            class="h-5"
+          />
+          <div class="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-green-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            <span class="text-xs text-gray-500 ml-1">Secure Payment</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Status Modal -->
+    <div
+      id="payment-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+    >
+      <div class="bg-white rounded-lg p-6 max-w-md w-full">
+        <div id="success-message" class="hidden text-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-16 w-16 text-green-500 mx-auto"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 class="text-xl font-bold mt-4">Payment Successful!</h3>
+          <p class="text-gray-600 mt-2">
+            Your transaction has been completed successfully.
+          </p>
+          <p class="text-sm text-gray-500 mt-1">
+            Transaction ID: <span id="transaction-id"></span>
+          </p>
+          <button
+            id="close-success"
+            class="mt-6 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+        <div id="failure-message" class="hidden text-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-16 w-16 text-red-500 mx-auto"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <h3 class="text-xl font-bold mt-4">Payment Failed</h3>
+          <p class="text-gray-600 mt-2">
+            There was an issue processing your payment.
+          </p>
+          <p class="text-sm text-gray-500 mt-1" id="error-message"></p>
+          <button
+            id="close-failure"
+            class="mt-6 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="relative min-h-screen flex items-center justify-center bg-white overflow-hidden"
+    >
+      <!-- Blurred Gradient Background -->
+      <div class="absolute inset-0">
+        <div
+          class="w-full h-[70%] bg-gradient-to-t from-white via-transparent to-transparent"
+        ></div>
+        <div
+          class="w-full h-full bg-gradient-to-r from-[#f5c243] via-white to-[#3b82f6] blur-2xl opacity-90"
+        ></div>
+      </div>
+      <div class="relative z-10 text-center">
+        <div class="flex justify-center mb-4">
+          <!-- Icon -->
+          <div
+            class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold"
+          >
+            ＊
+          </div>
+        </div>
+        <h1 class="text-3xl font-semibold text-gray-900 mb-2">
+          Get the Payer Mobile App
+        </h1>
+        <p class="text-gray-600 mb-4">
+          With this platform, you can access your account anywhere, anytime<br />for
+          balance and so much more
+        </p>
+        <button
+          class="btn rounded-full
+        >
+          <span class="relative z-10">Download App</span>
+          <!-- Glow effect -->
+          
+        </button>
+      </div>
+
+      <!-- Content -->
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Payment method selection
+        const paymentMethods = document.querySelectorAll(".payment-method");
+        paymentMethods.forEach((method) => {
+          method.addEventListener("click", function () {
+            // Remove active class from all methods
+            paymentMethods.forEach((m) => {
+              m.classList.remove("active");
+              m.classList.remove("border-blue-500");
+              m.classList.remove("bg-blue-50");
+              m.querySelector("svg").classList.remove("text-blue-600");
+              m.querySelector("svg").classList.add("text-gray-600");
+            });
+
+            // Add active class to selected method
+            this.classList.add("active");
+            this.classList.add("border-blue-500");
+            this.classList.add("bg-blue-50");
+            this.querySelector("svg").classList.remove("text-gray-600");
+            this.querySelector("svg").classList.add("text-blue-600");
+          });
+        });
+
+        // Form submission
+        const form = document.getElementById("payment-form");
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form data
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const phone = document.getElementById("phone").value;
+          const amount = document.getElementById("amount").value;
+          const selectedMethod = document.querySelector(
+            ".payment-method.active"
+          ).dataset.method;
+
+          // Validate form
+          if (!name || !email || !phone || !amount) {
+            alert("Please fill all required fields");
+            return;
+          }
+
+          // Initialize Razorpay
+          options = {
+            key: "rzp_test_Ys71AqPYJrQImr", // Replace with your actual key
+            amount: amount * 100, // Amount in paise
+            currency: "INR",
+            name: "StayEase",
+            description: "Please verify your payment amount before proceeding.",
+            image: "../assets/img/stayease logo.svg", // Replace with your logo
+            prefill: {
+              name: name,
+              email: email,
+              contact: phone,
+            },
+            theme: {
+              color: "#000000", // Blue color matching our UI
+            },
+            modal: {
+              ondismiss: function () {
+                console.log("Payment modal closed");
+              },
+              // Add this line to hide the test mode banner
+              escape: true,
+            },
+            handler: function (response) {
+              // Handle successful payment
+              document.getElementById("transaction-id").textContent =
+                response.razorpay_payment_id;
+              document
+                .getElementById("success-message")
+                .classList.remove("hidden");
+              document
+                .getElementById("failure-message")
+                .classList.add("hidden");
+              document
+                .getElementById("payment-modal")
+                .classList.remove("hidden");
+            },
+          };
+
+          const rzp = new Razorpay(options);
+
+          rzp.on("payment.failed", function (response) {
+            // Handle payment failure
+            document.getElementById("error-message").textContent =
+              response.error.description;
+            document
+              .getElementById("failure-message")
+              .classList.remove("hidden");
+            document.getElementById("success-message").classList.add("hidden");
+            document.getElementById("payment-modal").classList.remove("hidden");
+          });
+
+          rzp.open();
+        });
+
+        // Close modal buttons
+        document
+          .getElementById("close-success")
+          .addEventListener("click", function () {
+            document.getElementById("payment-modal").classList.add("hidden");
+            form.reset();
+          });
+
+        document
+          .getElementById("close-failure")
+          .addEventListener("click", function () {
+            document.getElementById("payment-modal").classList.add("hidden");
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+  </head>
+  <body class="font-Nrj-fonts bg-[#0F0F12] text-white">
+    <!-- Topbar -->
+    <header
+      class="flex h-16 border-b-[1.5px] border-[#1F1F23] fixed top-0 left-0 right-0 bg-[#0F0F12]"
+    >
+      <div
+        class="w-[20%] flex items-center justify-center font-semibold text-sm border-r-[1.5px] border-[#1F1F23]"
+      >
+        Admin Dashboard
+      </div>
+      <nav class="flex flex-row items-center justify-end gap-2 w-full pr-4">
+        <!-- Nav Content -->
+        <button
+          class="relative flex flex-col justify-center items-center h-10 w-10 bg-transparent hover:bg-gray-600/20 transition duration-200 ease-in-out rounded-full group"
+        >
+          <i
+            data-lucide="bell"
+            class="w-5 h-5 text-gray-200 transition duration-200"
+          ></i>
+
+          <!-- Small Solid Green Dot -->
+          <span
+            class="absolute top-2 right-3 h-2 w-2 rounded-full bg-green-500"
+          ></span>
+        </button>
+
+        <button
+          class="flex flex-col justify-center items-center h-10 w-10 bg-transparent hover:bg-gray-600/20 transition duration-200 ease-in-out rounded-full group"
+        >
+          <i
+            data-lucide="moon"
+            class="w-5 h-5 text-gray-200 transition duration-200"
+          ></i>
+        </button>
+        <button
+          class="flex flex-col justify-center items-center h-10 w-10 bg-transparent hover:bg-gray-600/20 transition duration-200 ease-in-out rounded-full group"
+        >
+          <i
+            data-lucide="circle-user"
+            class="w-5 h-5 text-gray-200 transition duration-200"
+          ></i>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex pt-16 h-screen overflow-hidden">
+      <!-- SidebarBarChart2, Receipt, Building2, CreditCard, Folder, Wallet,
+      Users2, Shield, MessagesSquare, Video, Settings, HelpCircle, Menu, -->
+
+      <aside
+        class="w-[20%] border-r-[1.5px] border-[#1F1F23] p-2 text-center text-sm"
+      >
+        <div class="overflow-y-auto pr-1 space-y-4"></div>
+        <!-- Overview Section -->
+        <div
+          class="text-start py-1 px-4 flex flex-col justify-start items-start gap-1"
+        >
+          <h1 class="text-[12px] text-gray-400 font-semibold uppercase">
+            overview
+          </h1>
+
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="Chart-No-Axes-Column"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Analytics
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="building"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Organization
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="folder"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Projects
+          </button>
+        </div>
+
+        <!-- Finance Section -->
+        <div
+          class="text-start py-2 px-4 flex flex-col justify-start items-start gap-2"
+        >
+          <h1 class="text-[12px] text-gray-400 font-semibold uppercase">
+            Finance
+          </h1>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="wallet"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Transcations
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="receipt"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Invoices
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="credit-card"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Payments
+          </button>
+        </div>
+
+        <!-- Team Section -->
+        <div
+          class="text-start py-2 px-4 flex flex-col justify-start items-start gap-2"
+        >
+          <h1 class="text-[12px] text-gray-400 font-semibold uppercase">
+            TEAM
+          </h1>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="users"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Members
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="shield"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Permissions
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="messages-square"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Chat
+          </button>
+        </div>
+        <div
+          class="text-start py-2 px-4 flex flex-col justify-start items-start gap-2"
+        >
+          <hr class="w-full border-t border-gray-500/50 rounded-full" />
+
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="Settings"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Settings
+          </button>
+          <button
+            class="group flex flex-row justify-start items-center gap-2 text-start px-3 py-3 rounded-md w-full text-gray-300 hover:text-gray-100 text-xs bg-transparent hover:bg-gray-400/10 transition duration-200 ease-in-out"
+          >
+            <i
+              data-lucide="circle-help"
+              class="w-4 h-4 text-gray-300 transition duration-200 group-hover:text-gray-100"
+            ></i>
+            Help
+          </button>
+        </div>
+      </aside>
+
+      <div
+        class="w-full h-full bg-[#0F0F12] p-8 overflow-auto flex flex-row gap-8"
+      >
+        <div
+          class="w-1/2 h-[80%] border-[1.5px] border-[#1F1F23] rounded-lg p-6"
+        >
+          <span
+            class="text-white font-semibold flex flex-row gap-2 items-center mb-5"
+          >
+            <i data-lucide="wallet" class="w-4 h-4 text-gray-200"></i
+            >Accounts</span
+          >
+          <div
+            class="w-full h-[90%] bg-zinc-900/60 border border-zinc-700/80 rounded-xl"
+          >
+            <div class="flex flex-col justify-center items-start p-4">
+              <p class="text-gray-400 text-sm font">Total Balance</p>
+              <h1 class="text-white text-2xl font-bold">$26,000</h1>
+            </div>
+            <img
+              src="C:\Users\Niraj\Downloads\ec782500-9c29-4dbc-8b39-27acba75a178.png"
+              alt=""
+            />
+            <hr class="w-full border-gray-500/50" />
+          </div>
+        </div>
+        <div
+          class="w-1/2 h-[80%] border-[1.5px] border-[#1F1F23] rounded-lg"
+        ></div>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

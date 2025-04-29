@@ -205,7 +205,7 @@ $userID = $_SESSION["userID"] ?? null;
   </script>
 </head>
 
-<body>
+<body class="animate-fade-in">
   <!-- Discount Modal -->
   <div id="discountModal"
     class="fixed inset-0 font-Nrj-fonts bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -596,12 +596,8 @@ $userID = $_SESSION["userID"] ?? null;
     </ol>
 
     <div class="flex justify-center items-center scroll-animation">
-      <!-- Circle -->
-      <div class="w-32 h-32 md:w-72 md:h-72 lg:w-72 lg:h-72 bg-for bg-opacity-90 rounded-full relative">
-        <!-- Image -->
-        <img src="../assets/img/finger-pointing.png" alt="Finger Pointing"
-          class="max-w-90 max-h-90 -mt-12 md:-mt-9 lg:-mt-[107px] " />
-      </div>
+      <!-- Image -->
+      <img src="../assets/img/fingers.svg" alt="Finger Pointing" class="w-[450px] h-[450px] " />
     </div>
   </div>
 
@@ -618,26 +614,44 @@ $userID = $_SESSION["userID"] ?? null;
 
       <div class="carousel-container">
         <div id="carousel" class="carousel-track">
-          <?php foreach ($properties as $property): ?>
+          <?php
+          // First, determine how many properties to show as recommended (e.g., 30% of total)
+          $totalProperties = count($properties);
+          $numRecommended = round($totalProperties * 0.45); // 30% of the properties
+          
+          // Ensure at least one property is recommended
+          if ($numRecommended < 1) {
+            $numRecommended = 1;
+          }
+
+          // Pick random keys from the properties array
+          $randomKeys = array_rand($properties, $numRecommended);
+          if (!is_array($randomKeys)) {
+            $randomKeys = [$randomKeys];
+          }
+
+          // Build an array of recommended properties
+          $recommendedProperties = [];
+          foreach ($randomKeys as $key) {
+            $recommendedProperties[] = $properties[$key];
+          }
+          ?>
+
+          <!-- Now loop only through the recommended properties -->
+          <?php foreach ($recommendedProperties as $property): ?>
             <div class="bg-white rounded-xl shadow-md border-[1.5px] border-gray-300 w-72 h-80 flex-shrink-0">
               <div class="relative">
                 <img class="w-full h-40 object-cover rounded-t-xl" src="<?= $property['image'] ?>" alt="Property Image" />
 
-                <?php
-                // Show the "Recommended" badge on random properties (e.g., 30% chance)
-                if (rand(1, 100) <= 60):
-                  ?>
-                  <!-- Recommended Badge (Left Side) -->
-                  <div class="absolute top-0 left-0 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium px-3 py-1 
-                    rounded-tl-lg rounded-br-lg flex items-center gap-2 shadow-md">
-                    <img class="w-3 h-3" src="../assets/img/crown.png" alt="Crown Icon"> Recommended
-                  </div>
-                <?php endif; ?>
+                <!-- Recommended Badge -->
+                <div class="absolute top-0 left-0 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium px-3 py-1 
+          rounded-tl-lg rounded-br-lg flex items-center gap-2 shadow-md">
+                  <img class="w-3 h-3" src="../assets/img/crown.png" alt="Crown Icon"> Recommended
+                </div>
               </div>
 
-
               <div class="p-4">
-                <h3 class="text-lg font-semibold "> <?= $property['property_name'] ?> </h3>
+                <h3 class="text-lg font-semibold"> <?= $property['property_name'] ?> </h3>
                 <div class="flex items-center text-gray-600 text-sm mt-1 mb-1">
                   <i class="fa-regular fa-location-dot mr-1"></i>
                   <?= $property['location'] ?>
@@ -656,21 +670,23 @@ $userID = $_SESSION["userID"] ?? null;
                   <input type="hidden" name="userID" value="<?= $_SESSION['userID'] ?>">
                   <input type="hidden" name="user_email" value="<?= $_SESSION['user_email'] ?>">
 
-
                   <!-- Price -->
-                  <h2 class="text-sm font-normal text-gray-500"><span
-                      class="text-black text-xl font-semibold">₹<?= number_format($property['price']) ?><span
-                        class="text-sm font-normal text-gray-500"> /month</span></span>
+                  <h2 class="text-sm font-normal text-gray-500">
+                    <span class="text-black text-xl font-semibold">
+                      ₹<?= number_format($property['price']) ?><span class="text-sm font-normal text-gray-500">
+                        /month</span>
+                    </span>
                   </h2>
 
                   <button type="submit"
-                    class="w-full py-2 px-4 mt-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 shadow-sm">View
-                    Details
+                    class="w-full py-2 px-4 mt-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 shadow-sm">
+                    View Details
                   </button>
                 </form>
               </div>
             </div>
           <?php endforeach; ?>
+
         </div>
       </div>
 
@@ -706,7 +722,7 @@ $userID = $_SESSION["userID"] ?? null;
         <div class="gap-8 space-y-8 md:columns-2 lg:columns-3">
           <div class="p-8 bg-white border border-gray-300 drop-shadow-md aspect-auto rounded-xl shadow-gray-600/10">
             <div class="flex gap-4 items-start">
-              <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/men/12.jpg" alt="user avatar"
+              <img class="w-12 h-12 rounded-full object-cover" src="../assets\img\Ravi Kumar.png" alt="user avatar"
                 width="400" height="400" loading="lazy" />
               <div class="flex-1 flex justify-between items-start">
                 <div>
@@ -725,8 +741,8 @@ $userID = $_SESSION["userID"] ?? null;
 
           <div class="p-8 bg-white border border-gray-300 drop-shadow-md aspect-auto rounded-xl shadow-gray-600/10">
             <div class="flex gap-4 items-start">
-              <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/women/5.jpg"
-                alt="user avatar" width="200" height="200" loading="lazy" />
+              <img class="w-12 h-12 rounded-full object-cover" src="../assets\img\Anjali Sharma.png" alt="user avatar"
+                width="200" height="200" loading="lazy" />
               <div class="flex-1 flex justify-between items-start">
                 <div>
                   <h6 class="text-lg font-medium text-gray-700">
@@ -746,7 +762,7 @@ $userID = $_SESSION["userID"] ?? null;
 
           <div class="p-8 bg-white border border-gray-300 drop-shadow-md aspect-auto rounded-xl shadow-gray-600/10">
             <div class="flex gap-4 items-start">
-              <img class="w-12 h-12 rounded-full" src="https://randomuser.me/api/portraits/men/18.jpg" alt="user avatar"
+              <img class="w-12 h-12 rounded-full object-cover" src="../assets\img\Vijay singh.png" alt="user avatar"
                 width="200" height="200" loading="lazy" />
               <div class="flex-1 flex justify-between items-start">
                 <div>
@@ -760,8 +776,8 @@ $userID = $_SESSION["userID"] ?? null;
               </div>
             </div>
             <p class="mt-8">
-              "StayEase is perfect for short-term rentals! Quick and easy to
-              negotiate a great deal."
+              "StayEase is perfect for room rentals! Quick and easy to
+              find a great deal."
             </p>
           </div>
         </div>

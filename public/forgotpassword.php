@@ -16,18 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($new_password !== $confirm_password) {
         $passwordErrorMsg = "Passwords do not match.";
     } else {
-        $servername = "localhost:3307"; // Database host
-        $username = "root";             // Database username
-        $password = "";                 // Database password
-        $dbname = "stayease";           // Database name
-
-        // Create the connection.
-        $conn = new mysqli($servername, $username, $password, $dbname);
-
-        // Check for any connection errors.
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+      include '../Database/dbconfig.php';
 
         // Check if the email exists in the "signup" table.
         $stmt = $conn->prepare("SELECT userID FROM signup WHERE email = ?");

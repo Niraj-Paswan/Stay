@@ -6,11 +6,7 @@ if (!isset($_SESSION['userID'], $_SESSION['property_id'], $_SESSION['total_payab
     die("Error: Payment details missing.");
 }
 
-$conn = new mysqli("localhost:3307", "root", "", "stayease");
-
-if ($conn->connect_error) {
-    die("Database connection failed: {$conn->connect_error}");
-}
+include '../Database/dbconfig.php';
 
 // Get user ID from session
 $userID = $_SESSION['userID'] ?? null;

@@ -2,17 +2,7 @@
 session_start();
 
 // Database connection
-$servername = "localhost:3307"; // Database host
-$username = "root";           // Database username
-$password = "";               // Database password
-$dbname = "stayease";       // Database name
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include '../Database/dbconfig.php';
 
 // Initialize error variables
 $admin_id_error = "";
